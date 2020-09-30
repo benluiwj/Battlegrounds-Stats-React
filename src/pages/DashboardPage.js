@@ -291,7 +291,7 @@ export class DashboardPage extends Component {
                     <TimeFrameSelector timeFrame={this.state.timeFrame} setTimeFrame={this.setTimeFrame}/>
                 </Header>
                 <Layout.Content>
-                    <Alert message={alertMsg} type="info" style={{textAlign: "center"}}/>
+                    {/*<Alert message={alertMsg} type="info" style={{textAlign: "center"}}/>*/}
                     <DashboardQueryProcessor data={data} player={player} queryParams={queryParams}/>
                 </Layout.Content>
             </Layout>
