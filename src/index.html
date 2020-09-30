@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% include 'google-analytics.html' %}
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{static('bg_stats/favicon/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{static('bg_stats/favicon/favicon-16x16.png')}}">
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
+    <meta name="description" content="Hearthstone Battlegrounds Statistics"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{static('bg_stats/favicon/apple-touch-icon.png')}}">
+    <link rel="manifest" href="{{static('bg_stats/favicon/site.webmanifest')}}">
+    <title>Battlegrounds Stats</title>
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: loaderSpin 2s linear infinite;
+            margin: 50px auto 30px auto;
+        }
+
+        @keyframes loaderSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root">
+    <div>
+        <div class="loader"></div>
+        <div style="text-align: center; font-size: 2em;">Please wait. Loading files for the first time might take awhile.</div>
+    </div>
+</div>
+<input type="hidden" id="graphUrl" data-url="{{ url('graphql') }}"/>
+<input type="hidden" id="indexUrl" data-url="{{ url('bgstats_index') }}"/>
+
+<% for(var i=0; i < htmlWebpackPlugin.files.js.length; i++) {%>
+<script type="text/javascript" src="{{ static('bg_stats/<%= htmlWebpackPlugin.files.js[i] %>') }}"></script>
+<% } %>
+
+</body>
+</html>

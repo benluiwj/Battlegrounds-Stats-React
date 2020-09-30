@@ -1,0 +1,14 @@
+.site-layout-content {
+    background: #fff;
+    padding: 10px 24px;
+    min-height: 280px;
+}
+
+.layout {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+tr.ant-table-expanded-row {
+    transition: visibility 1s;
+}

@@ -1,0 +1,342 @@
+import React, {Component} from "react";
+
+import {Link} from "react-router-dom";
+
+import Dashboard from "../components/Dashboard";
+import DashboardItem from "../components/DashboardItem";
+import Header from "../components/Header";
+import {Button, Layout, Alert} from "antd";
+
+import TimeFrameSelector from "../components/TimeFrameSelector";
+import PlusOutlined from "@ant-design/icons/lib/icons/PlusOutlined";
+import "antd/dist/antd.css";
+import moment from "moment";
+
+import "./DashboardPage.css";
+import {getQueryResult, playerFromUrl} from "../utilities/utilities";
+
+import {withRouter} from "react-router";
+import MmrOverTime from "../components/DashItems/MmrOverTime";
+import TurnStatistics from "../components/DashItems/TurnStatistics";
+import GamesOverTime from "../components/DashItems/GamesOverTime";
+import hero_localize from "../utilities/localization";
+import MmrSelector from "../components/MmrSelector";
+import routes from "../utilities/routes";
+
+
+const processHeroData = (data, player) => {
+    let heroes = {};
+    data.allGameRecords.forEach((item) => {
+        let hero = item.hero;
+
+        if (!player && hero in hero_localize) hero = hero_localize[hero];
+
+        if (!(hero in heroes))
+            heroes[hero] = {
+                count: 0,
+                totalPos: 0,
+                mmrCount: 0,
+                totalMmrChange: 0,
+            };
+
+        heroes[hero].count++;
+        heroes[hero].totalPos += item.position;
+
+        if (item.mmrChange !== null) {
+            heroes[hero].mmrCount++;
+            heroes[hero].totalMmrChange += item.mmrChange;
+        }
+    });
+
+    let result = Object.entries(heroes).map((data) => {
+            let hero = data[0];
+            let uriHero = encodeURI(hero);
+            let heroLink = player ? routes.playerHero(player, uriHero) : routes.hero(uriHero);
+
+            let mmrChange;
+            if (data[1].mmrCount === 0) {
+                mmrChange = "-";
+            } else {
+                let suffix = data[1].mmrCount === 1 ? "" : "s";
+                let change =Math.round(data[1].totalMmrChange / data[1].mmrCount);
+                let sign = "";
+                if (change > 0) sign = '+';
+
+                mmrChange = <span>
+                    {sign}{change}
+                    &nbsp;&nbsp;
+                    <span style={{color: "#ee40f7"}}>({data[1].mmrCount} Game{suffix})</span>
+                </span>;
+            }
+
+            let position = (data[1].totalPos / data[1].count).toFixed(2);
+
+            return {
+                'hero': <Link to={heroLink}>{hero}</Link>,
+                'count': data[1].count,
+                'avg_position': position,
+                'mmr_change': mmrChange,
+            }
+        }
+    );
+
+    result.sort((a, b) => {
+        if (a.avg_position > b.avg_position) return 1;
+        if (a.avg_position < b.avg_position) return -1;
+        return 0;
+    });
+
+    return result;
+};
+
+export const processArchetypeData = (data) => {
+    let archetypes = {};
+    data.allGameRecords.forEach((item) => {
+        if (item.finalBoard == null) return;
+
+        let archetype = item.finalBoard.archetype;
+
+        if (!(archetype in archetypes))
+            archetypes[archetype] = {
+                count: 0,
+                totalPos: 0,
+            };
+
+        archetypes[archetype].count++;
+        archetypes[archetype].totalPos += item.position;
+    });
+
+    let result = Object.entries(archetypes).map((data) => {
+            return {
+                'archetype': data[0],
+                'count': data[1].count,
+                'avg_position': (data[1].totalPos / data[1].count).toFixed(2)
+            }
+        }
+    );
+
+    result.sort((a, b) => a.avg_position - b.avg_position);
+
+    return result;
+};
+
+
+export function getTimeFrameFromStorage() {
+
+    if (localStorage.timeFrame) {
+        let tf = moment(localStorage.timeFrame);
+        if (!tf.isValid()) return localStorage.timeFrame;
+        return tf;
+    }
+    return "month";
+}
+
+const MIN_MMR = 3000;
+const MAX_MMR = 15000;
+
+function getMmrFromStorage() {
+
+    let minMmr = MIN_MMR, maxMmr = MAX_MMR;
+    if (localStorage.minMmr && !isNaN(localStorage.minMmr)) {
+        minMmr = localStorage.minMmr;
+    }
+    if (localStorage.maxMmr && !isNaN(localStorage.maxMmr)) {
+        maxMmr = localStorage.maxMmr;
+    }
+
+    return [minMmr, maxMmr];
+}
+
+// holds logic that includes the page header
+export class DashboardPage extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            timeFrame: getTimeFrameFromStorage(),
+            mmr: getMmrFromStorage(),
+        };
+        this.setTimeFrame = this.setTimeFrame.bind(this);
+        this.setMmr = this.setMmr.bind(this);
+    }
+
+    setMmr(mmr) {
+        localStorage.minMmr = mmr[0];
+        localStorage.maxMmr = mmr[1];
+        this.setState({mmr: mmr});
+    }
+
+    setTimeFrame(t) {
+        localStorage.timeFrame = moment.isMoment(t) ? t.format() : t;
+        this.setState({timeFrame: t});
+    }
+
+    timeFrameToDate() {
+        let tf;
+        if (this.state.timeFrame === 'week') tf = moment().subtract(7, 'day');
+        else if (this.state.timeFrame === 'month') tf = moment().subtract(1, 'month');
+        else if (this.state.timeFrame === 'allTime') tf = moment("20190801", "YYYYMMDD");
+        else tf = this.state.timeFrame;
+        return tf.format();
+    }
+
+    render() {
+
+        let queryParams = `dateTime:"${this.timeFrameToDate()}"`;
+        let player = this.props.match.params.player;
+        if (player) queryParams += `, player:"${playerFromUrl(player)}"`;
+        else queryParams += `, minMmr:${this.state.mmr[0]}, maxMmr:${this.state.mmr[1]}`;
+
+        const data = {
+            "dashboardItems": []
+        };
+
+        if (player) {
+            data.dashboardItems.push(MmrOverTime);
+        } else {
+            // in main page
+            data.dashboardItems.push(GamesOverTime);
+        }
+
+        // add Top Heroes table
+        data.dashboardItems.push({
+            "id": "heroRankings",
+            "layout": {"x": 0, "y": 8, "w": 4, "h": 10, "minW": 3},
+            "query": "allGameRecords",
+            "queryFields": {
+                position: null,
+                hero: null,
+                mmrChange: null,
+            },
+            "vizState": {
+                "chartType": "table",
+                processData: (data) => {
+                    return {
+                        columns: [
+                            {
+                                title: 'Hero',
+                                dataIndex: 'hero',
+                            }, {
+                                title: 'Average Position',
+                                dataIndex: 'avg_position',
+                            }, {
+                                title: 'Count',
+                                dataIndex: 'count',
+                            }, {
+                                title: 'Average MMR Change',
+                                dataIndex: 'mmr_change',
+                            },
+                        ],
+                        data: processHeroData(data, player),
+                        key: 'hero',
+                    }
+                }
+            },
+            "bodyStyle": {padding: 0},
+            "name": "Top Heroes",
+            "__typename": "DashboardItem"
+        });
+
+        // add Archetypes table
+        data.dashboardItems.push({
+            "id": "archetypes",
+            "layout": {"x": 4, "y": 8, "w": 4, "h": 10, "minW": 3},
+            "query": "allGameRecords",
+            "queryFields": {
+                position: null,
+                finalBoard: ["archetype"],
+            },
+            "vizState": {
+                "chartType": "table",
+                processData: (data) => {
+                    return {
+                        columns: [
+                            {
+                                title: 'Archetype',
+                                dataIndex: 'archetype',
+                            }, {
+                                title: 'Average Position',
+                                dataIndex: 'avg_position',
+                            }, {
+                                title: 'Count',
+                                dataIndex: 'count',
+                            }
+                        ],
+                        data: processArchetypeData(data),
+                        key: 'archetype',
+                    }
+                }
+            },
+            "bodyStyle": {padding: 0},
+            "name": "Top Archetypes",
+            "__typename": "DashboardItem"
+        });
+
+
+        // add turn statistics table
+        if (player) {
+            data.dashboardItems.push(TurnStatistics(queryParams));
+        }
+
+        let alertMsg = <span>Aug 8, 2020 - Download the new <a
+            href="https://github.com/jawslouis/Battlegrounds-Match-Data/releases">v0.4.3 plugin</a> to record your MMR change for each game</span>;
+
+        return (
+            <Layout style={{height: "100%"}}>
+                <Header>
+                    {!player &&
+                    <MmrSelector mmr={this.state.mmr} updateMmr={this.setMmr} minMmrRange={MIN_MMR}
+                                 maxMmrRange={MAX_MMR}/>}
+                    <TimeFrameSelector timeFrame={this.state.timeFrame} setTimeFrame={this.setTimeFrame}/>
+                </Header>
+                <Layout.Content>
+                    <Alert message={alertMsg} type="info" style={{textAlign: "center"}}/>
+                    <DashboardQueryProcessor data={data} player={player} queryParams={queryParams}/>
+                </Layout.Content>
+            </Layout>
+        );
+    }
+}
+
+export const DashboardQueryProcessor = ({player, data, queryParams}) => {
+
+    const queries = [];
+    // data structure:
+    // [ allGameRecord: {
+    //     field1: [sub1, sub2, ... ],
+    //     field2: ...
+    // } ]
+    data.dashboardItems.forEach(item => {
+        if (!("query" in item)) return;
+
+        if (!(item.query in queries)) {
+            queries[item.query] = {};
+        }
+        for (let [key, val] of Object.entries(item.queryFields)) {
+            if (!(key in queries[item.query])) {
+                queries[item.query][key] = [];
+            }
+
+            if (val == null) continue;
+
+            let fieldList = queries[item.query][key];
+            for (let field of val) {
+                if (!fieldList.includes(field)) {
+                    fieldList.push(field);
+                }
+            }
+        }
+    });
+
+    for (let [query, params] of Object.entries(queries)) {
+
+        params["queryResult"] = getQueryResult(params, query, queryParams);
+    }
+
+    return <Dashboard dashboardItems={data.dashboardItems} player={player} queries={queries}/>;
+
+};
+
+
+export default withRouter(DashboardPage);

@@ -1,0 +1,16 @@
+.ant-slider-handle {
+    background-color: rgb(0, 21, 41);
+    border: solid 2px #1890ff;
+}
+
+.ant-slider-rail {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ant-slider:hover .ant-slider-rail {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ant-slider-track {
+    background-color: #1890ff;
+}

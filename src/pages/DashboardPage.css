@@ -1,0 +1,31 @@
+#timeFrameSelector li {
+    text-align: center;
+}
+
+.timeFramePicker {
+    background-color: rgba(0, 21, 41, 0.7);
+}
+
+.timeFramePicker .ant-picker-clear {
+    background-color: rgba(0, 0, 0, 0);
+    color: rgba(255, 255, 255, 1);
+}
+
+.timeFramePicker input {
+    border-color: rgb(67, 67, 67);
+    color: rgba(255, 255, 255, 0.8);
+    outline-color: rgba(255, 255, 255, 0.65);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.timeFramePicker .anticon-calendar {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.ant-card-head {
+    background-color: #162267;
+}
+
+.ant-card-head-title {
+    color: whitesmoke;
+}
