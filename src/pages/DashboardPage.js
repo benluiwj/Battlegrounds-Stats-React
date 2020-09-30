@@ -131,7 +131,7 @@ export function getTimeFrameFromStorage() {
     return "month";
 }
 
-const MIN_MMR = 3000;
+const MIN_MMR = 0;
 const MAX_MMR = 15000;
 
 function getMmrFromStorage() {
