@@ -6,6 +6,7 @@ import ChartRenderer from "./ChartRenderer";
 import {gql} from "apollo-boost";
 import {getQueryResult} from "../utilities/utilities";
 import {useQuery} from "@apollo/react-hooks";
+import {minionsToArchetype} from "./DashItems/Archetypes";
 
 // Class is created to properly animate expanding rows of varying heights
 class ExpandableRow extends BootstrapTable {
@@ -36,24 +37,12 @@ const collapseRow = (row) => {
 
 const processExpandedData = (item) => {
     return item.gameRecord.boardSet.map(d => {
-        d.minions = minionSetToString(d.minionSet);
+        d.archetype = minionsToArchetype(d.minions);
         d.self = d.isSelf ? "Yes" : "";
         d.key = `${d.hero}-${d.turn}-${d.isSelf}`;
         d.avgStats = `<span className="no-wrap">${d.avgAttack} / ${d.avgHealth}</span>`;
         return d;
     }).sort(sortHistory);
-};
-
-
-function minionToString(minion) {
-    let keywords = "";
-    if (minion.keywords) keywords = ' ' + minion.keywords;
-    return `<span class="no-wrap">${minion.name} (${minion.attack}/${minion.health}${keywords})</span>`;
-}
-
-
-const minionSetToString = (mSet) => {
-    return mSet.map(m => minionToString(m)).join(", ");
 };
 
 
@@ -78,12 +67,7 @@ function renderExpandableRow(record, resultSet, index) {
                         avgAttack
                         avgHealth
                         archetype
-                        minionSet {
-                           name
-                           attack
-                           health
-                           keywords
-                        }
+                        minions
                     }
                 }
             }`;

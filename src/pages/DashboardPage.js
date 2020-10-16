@@ -5,10 +5,9 @@ import {Link} from "react-router-dom";
 import Dashboard from "../components/Dashboard";
 import DashboardItem from "../components/DashboardItem";
 import Header from "../components/Header";
-import {Button, Layout, Alert} from "antd";
+import {Layout} from "antd";
 
 import TimeFrameSelector from "../components/TimeFrameSelector";
-import PlusOutlined from "@ant-design/icons/lib/icons/PlusOutlined";
 import "antd/dist/antd.css";
 import moment from "moment";
 
@@ -22,6 +21,7 @@ import GamesOverTime from "../components/DashItems/GamesOverTime";
 import hero_localize from "../utilities/localization";
 import MmrSelector from "../components/MmrSelector";
 import routes from "../utilities/routes";
+import {archetypeItem} from "../components/DashItems/Archetypes";
 
 
 const processHeroData = (data, player) => {
@@ -58,7 +58,7 @@ const processHeroData = (data, player) => {
                 mmrChange = "-";
             } else {
                 let suffix = data[1].mmrCount === 1 ? "" : "s";
-                let change =Math.round(data[1].totalMmrChange / data[1].mmrCount);
+                let change = Math.round(data[1].totalMmrChange / data[1].mmrCount);
                 let sign = "";
                 if (change > 0) sign = '+';
 
@@ -85,37 +85,6 @@ const processHeroData = (data, player) => {
         if (a.avg_position < b.avg_position) return -1;
         return 0;
     });
-
-    return result;
-};
-
-export const processArchetypeData = (data) => {
-    let archetypes = {};
-    data.allGameRecords.forEach((item) => {
-        if (item.finalBoard == null) return;
-
-        let archetype = item.finalBoard.archetype;
-
-        if (!(archetype in archetypes))
-            archetypes[archetype] = {
-                count: 0,
-                totalPos: 0,
-            };
-
-        archetypes[archetype].count++;
-        archetypes[archetype].totalPos += item.position;
-    });
-
-    let result = Object.entries(archetypes).map((data) => {
-            return {
-                'archetype': data[0],
-                'count': data[1].count,
-                'avg_position': (data[1].totalPos / data[1].count).toFixed(2)
-            }
-        }
-    );
-
-    result.sort((a, b) => a.avg_position - b.avg_position);
 
     return result;
 };
@@ -239,39 +208,7 @@ export class DashboardPage extends Component {
         });
 
         // add Archetypes table
-        data.dashboardItems.push({
-            "id": "archetypes",
-            "layout": {"x": 4, "y": 8, "w": 4, "h": 10, "minW": 3},
-            "query": "allGameRecords",
-            "queryFields": {
-                position: null,
-                finalBoard: ["archetype"],
-            },
-            "vizState": {
-                "chartType": "table",
-                processData: (data) => {
-                    return {
-                        columns: [
-                            {
-                                title: 'Archetype',
-                                dataIndex: 'archetype',
-                            }, {
-                                title: 'Average Position',
-                                dataIndex: 'avg_position',
-                            }, {
-                                title: 'Count',
-                                dataIndex: 'count',
-                            }
-                        ],
-                        data: processArchetypeData(data),
-                        key: 'archetype',
-                    }
-                }
-            },
-            "bodyStyle": {padding: 0},
-            "name": "Top Archetypes",
-            "__typename": "DashboardItem"
-        });
+        data.dashboardItems.push(archetypeItem);
 
 
         // add turn statistics table

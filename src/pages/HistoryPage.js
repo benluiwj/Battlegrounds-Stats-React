@@ -95,8 +95,6 @@ const HistoryPage = () => {
     </Layout>;
 };
 
-const typeRegex = /(Available|Unavailable)/g;
-
 function formatMinionTypes(text){
     if (text == null) return null;
 
