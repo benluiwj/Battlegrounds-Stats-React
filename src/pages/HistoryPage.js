@@ -12,7 +12,7 @@ import {useQuery} from "@apollo/react-hooks";
 
 const HistoryPage = () => {
     let {player} = useParams();
-    player = player.replace("-","#");
+    player = player.replace("-", "#");
 
     const vizState = {
         "chartType": "expandableTable",
@@ -26,13 +26,18 @@ const HistoryPage = () => {
                         text: 'Hero',
                         dataField: 'hero',
                     }, {
+                        text: 'Minion Types',
+                        dataField: 'minionTypes',
+                    }, {
                         text: 'Position',
                         dataField: 'position',
-                    },
-                    {
+                    }, {
                         text: 'MMR',
                         dataField: 'mmr',
-                    }
+                    }, {
+                        text: 'MMR Change',
+                        dataField: 'mmrChange',
+                    },
                 ],
                 data: processHistoryData(data),
                 key: 'dateTime',
@@ -68,10 +73,12 @@ const HistoryPage = () => {
         }
     };
 
-    const queryResult= useQuery( gql`{
+    const queryResult = useQuery(gql`{
                     allGameRecords(player:"${player}") {
                         position
                         mmr
+                        mmrChange
+                        minionTypes
                         hero
                         dateTime
                         id
@@ -82,12 +89,21 @@ const HistoryPage = () => {
         <Header/>
         <Layout.Content className="layout" style={{padding: '0 50px'}}>
             <div className="site-layout-content">
-                <ChartRenderer item={{vizState:vizState, query:"allGameRecords"}} queryResult={queryResult}/>
+                <ChartRenderer item={{vizState: vizState, query: "allGameRecords"}} queryResult={queryResult}/>
             </div>
         </Layout.Content>
     </Layout>;
 };
 
+const typeRegex = /(Available|Unavailable)/g;
+
+function formatMinionTypes(text){
+    if (text == null) return null;
+
+    let t = text.split(/[;:]/g);
+    return <>{t[1]}, <span style={{textDecoration:"line-through"}}>{t[3]}</span></>;
+
+}
 
 const processHistoryData = (data) => {
 
@@ -97,11 +113,9 @@ const processHistoryData = (data) => {
         .sort(sortRecordsByDate)
         .map((item) => {
             return {
-                'dateTime': formatter(item.dateTime),
-                'hero': item.hero,
-                'position': item.position,
-                'mmr': item.mmr,
-                'id': item.id,
+                ...item,
+                minionTypes: formatMinionTypes(item.minionTypes),
+                dateTime: formatter(item.dateTime),
             }
         });
 
