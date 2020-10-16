@@ -1,5 +1,23 @@
-import minionType from "../../utilities/minionType";
+import React from "react";
+import {Button} from 'antd';
 
+import minionType from "../../utilities/minionType";
+import routes from "../../utilities/routes";
+
+export function getArchetypesFromStorage() {
+
+    if (localStorage.archetypes) {
+        try {
+            return JSON.parse(localStorage.archetypes);
+        } catch (e) {
+            return archetypeTests;
+        }
+    } else return archetypeTests;
+}
+
+export function saveArchetypes(archetypes) {
+    localStorage.archetypes = JSON.stringify(archetypes);
+}
 
 const archetypeTests = [
     {
@@ -36,20 +54,14 @@ const archetypeTests = [
         optionalCount: 4,
     }, {
         name: "Brann",
-        required: {
-            "Brann Bronzebeard": 1,
-        },
-        optional: null
+        required: ["Brann Bronzebeard"],
     }, {
         name: "Lightfang",
-        required: {
-            "Lightfang Enforcer": 1,
-        },
-        optional: null
+        required: ["Lightfang Enforcer"],
     }
 ];
 
-export function minionsToArchetype(minions) {
+export function minionsToArchetype(typeTests, minions) {
     let minionList = minions.split(/\([^)]*\),?/)
         .filter(m => m !== "")
         .map(m => m.trim());
@@ -67,19 +79,19 @@ export function minionsToArchetype(minions) {
     let archetype = "Others";
 
 
-    for (const test of archetypeTests) {
+    for (const test of typeTests) {
 
         let pass = true;
 
         if ('required' in test) {
-            for (const [key, value] of Object.entries(test.required)) {
-                if (combined.filter(m => key === m).length < value) {
+            test.required.forEach( req => {
+                if (!combined.includes(req)) {
                     pass = false;
                 }
-            }
+            });
         }
 
-        if (test.optional !== null) {
+        if ('optional' in test) {
             let optionalCount = 0;
             test.optional.forEach(opt => {
                 optionalCount += combined.filter(m => opt === m).length;
@@ -99,12 +111,13 @@ export function minionsToArchetype(minions) {
 }
 
 
-const processArchetypeData = (data) => {
+export const processArchetypeData = (data) => {
     let archetypes = {};
+    const typeTest = getArchetypesFromStorage();
     data.allGameRecords.forEach((item) => {
         if (item.finalBoard == null) return;
 
-        let archetype = minionsToArchetype(item.finalBoard.minions);
+        let archetype = minionsToArchetype(typeTest, item.finalBoard.minions);
 
         if (!(archetype in archetypes))
             archetypes[archetype] = {
@@ -159,6 +172,7 @@ export const archetypeItem = {
             }
         }
     },
+    titleButton: <Button ghost href={routes.archetype}>Edit</Button>,
     "bodyStyle": {padding: 0},
     "name": "Top Archetypes",
     "__typename": "DashboardItem"

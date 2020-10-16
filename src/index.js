@@ -13,6 +13,7 @@ import HistoryPage from "./pages/HistoryPage";
 import routes from "./utilities/routes";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
+import ArchetypePage from "./pages/ArchetypePage";
 
 ReactDOM.render(
     <Router>
@@ -21,6 +22,7 @@ ReactDOM.render(
                 <Route key="index" exact path={routes.index} component={DashboardPage}/>
                 <Route key="admin" exact path={routes.admin} component={AdminPage}/>
                 <Route key="about" exact path={routes.about} component={AboutPage}/>
+                <Route key="archetype" exact path={routes.archetype} component={ArchetypePage}/>
                 <Route key="hero" exact path={routes.hero(":hero")} component={HeroPage}/>
                 <Route key="history" exact path={routes.playerHistory(":player")} component={HistoryPage}/>
                 <Route key="playerHero" exact path={routes.playerHero(":player", ":hero")} component={HeroPage}/>

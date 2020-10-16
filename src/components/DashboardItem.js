@@ -41,6 +41,8 @@ class DashboardItem extends Component {
         if ("menu" in item) {
             extra = <DashboardItemDropdown menu={item.menu(this.state, this.updateState)}/>;
             item.vizState.processData = item.vizState.createProcess(this.state);
+        } else if ("titleButton" in item){
+            extra = item.titleButton;
         }
 
         // save latest state here

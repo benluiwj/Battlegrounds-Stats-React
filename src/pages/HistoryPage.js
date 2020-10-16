@@ -26,7 +26,7 @@ const HistoryPage = () => {
                         text: 'Hero',
                         dataField: 'hero',
                     }, {
-                        text: 'Minion Types',
+                        text: 'Minion Types in Game',
                         dataField: 'minionTypes',
                     }, {
                         text: 'Position',

@@ -7,7 +7,7 @@ import MmrSelector from "../components/MmrSelector";
 import TimeFrameSelector from "../components/TimeFrameSelector";
 import React from "react";
 import {TurnLevels} from "../components/DashItems/TurnLevels";
-import {processArchetypeData} from "../components/DashItems/Archetypes";
+import {archetypeItem} from "../components/DashItems/Archetypes";
 
 
 const processMinionData = (data) => {
@@ -105,40 +105,7 @@ class HeroPage extends DashboardPage {
             "__typename": "DashboardItem"
         });
 
-        data.dashboardItems.push({
-            "id": "archetypes",
-            "layout": {"x": 4, "y": 8, "w": 4, "h": 10, "minW": 3},
-            "query": "allGameRecords",
-            "queryFields": {
-                position: null,
-                finalBoard: ["archetype"],
-            },
-            "queryParams": queryParams,
-            "vizState": {
-                "chartType": "table",
-                processData: (data) => {
-                    return {
-                        columns: [
-                            {
-                                title: 'Archetype',
-                                dataIndex: 'archetype',
-                            }, {
-                                title: 'Average Position',
-                                dataIndex: 'avg_position',
-                            }, {
-                                title: 'Count',
-                                dataIndex: 'count',
-                            }
-                        ],
-                        data: processArchetypeData(data),
-                        key: 'archetype',
-                    }
-                }
-            },
-            "bodyStyle": {padding: 0},
-            "name": "Top Archetypes",
-            "__typename": "DashboardItem"
-        });
+        data.dashboardItems.push(archetypeItem);
 
         return (
             <Layout style={{height: "100%"}}>

@@ -6,7 +6,7 @@ import ChartRenderer from "./ChartRenderer";
 import {gql} from "apollo-boost";
 import {getQueryResult} from "../utilities/utilities";
 import {useQuery} from "@apollo/react-hooks";
-import {minionsToArchetype} from "./DashItems/Archetypes";
+import {getArchetypesFromStorage, minionsToArchetype} from "./DashItems/Archetypes";
 
 // Class is created to properly animate expanding rows of varying heights
 class ExpandableRow extends BootstrapTable {
@@ -36,8 +36,9 @@ const collapseRow = (row) => {
 };
 
 const processExpandedData = (item) => {
+    const typeTest = getArchetypesFromStorage();
     return item.gameRecord.boardSet.map(d => {
-        d.archetype = minionsToArchetype(d.minions);
+        d.archetype = minionsToArchetype(typeTest, d.minions);
         d.self = d.isSelf ? "Yes" : "";
         d.key = `${d.hero}-${d.turn}-${d.isSelf}`;
         d.avgStats = `<span className="no-wrap">${d.avgAttack} / ${d.avgHealth}</span>`;
@@ -73,7 +74,7 @@ function renderExpandableRow(record, resultSet, index) {
             }`;
 
     return <ChartRenderer item={{
-        query:"gameRecord",
+        query: "gameRecord",
         rawQuery: rawQuery,
         vizState: {
             "chartType": "expandableRow",
@@ -86,7 +87,7 @@ function renderExpandableRow(record, resultSet, index) {
                 };
             }
         }
-    }} />;
+    }}/>;
 }
 
 const ExpandableTable = ({resultSet}) => {
