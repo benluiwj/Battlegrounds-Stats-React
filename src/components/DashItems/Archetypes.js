@@ -6,7 +6,7 @@ import routes from "../../utilities/routes";
 
 export function getArchetypesFromStorage() {
 
-    if (localStorage.archetypes) {
+    if (localStorage.archetypes && localStorage.archetypes !== "{}") {
         try {
             return JSON.parse(localStorage.archetypes);
         } catch (e) {
@@ -84,7 +84,7 @@ export function minionsToArchetype(typeTests, minions) {
         let pass = true;
 
         if ('required' in test) {
-            test.required.forEach( req => {
+            test.required.forEach(req => {
                 if (!combined.includes(req)) {
                     pass = false;
                 }
@@ -118,7 +118,6 @@ export const processArchetypeData = (data) => {
         if (item.finalBoard == null) return;
 
         let archetype = minionsToArchetype(typeTest, item.finalBoard.minions);
-
         if (!(archetype in archetypes))
             archetypes[archetype] = {
                 count: 0,
