@@ -8,11 +8,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: './src/index.js',
     // devtool: 'eval-cheap-module-source-map',
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
     output: {
         path: path.resolve(__dirname, '../static/bg_stats'),
-        // filename: '[name].[contenthash].js',
-        filename: '[name].js',
+        filename: '[name].[contenthash].js',
+        // filename: '[name].js',
     },
     optimization: {
         splitChunks: {
