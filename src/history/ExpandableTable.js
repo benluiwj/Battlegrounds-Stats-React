@@ -2,11 +2,11 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import "./ExpandableTable.css";
 import React from "react";
 import {CaretDownOutlined, CaretRightOutlined, PlusOutlined, MinusOutlined} from "@ant-design/icons";
-import ChartRenderer from "./ChartRenderer";
+import ChartRenderer from "../components/ChartRenderer";
 import {gql} from "apollo-boost";
 import {getQueryResult} from "../utilities/utilities";
 import {useQuery} from "@apollo/react-hooks";
-import {getArchetypesFromStorage, minionsToArchetype} from "./DashItems/Archetypes";
+import {getArchetypesFromStorage, minionsToArchetype} from "../dashboard/dashItems/Archetypes";
 
 // Class is created to properly animate expanding rows of varying heights
 class ExpandableRow extends BootstrapTable {
@@ -39,6 +39,8 @@ const processExpandedData = (item) => {
     const typeTest = getArchetypesFromStorage();
     return item.gameRecord.boardSet.map(d => {
         d.archetype = minionsToArchetype(typeTest, d.minions);
+
+
         d.self = d.isSelf ? "Yes" : "";
         d.key = `${d.hero}-${d.turn}-${d.isSelf}`;
         d.avgStats = `<span className="no-wrap">${d.avgAttack} / ${d.avgHealth}</span>`;
@@ -65,9 +67,6 @@ function renderExpandableRow(record, resultSet, index) {
                         dateTime
                         combatResult
                         turn
-                        avgAttack
-                        avgHealth
-                        archetype
                         minions
                     }
                 }

@@ -1,13 +1,13 @@
 import {withRouter} from "react-router";
-import {DashboardPage, DashboardQueryProcessor} from "./DashboardPage";
+import {DashboardPage, DashboardQueryProcessor} from "../dashboard/DashboardPage";
 import {playerFromUrl} from "../utilities/utilities";
 import {Layout} from "antd";
-import Header from "../components/Header";
-import MmrSelector from "../components/MmrSelector";
-import TimeFrameSelector from "../components/TimeFrameSelector";
+import Header from "../header/Header";
+import MmrSelector from "../header/MmrSelector";
+import TimeFrameSelector from "../header/TimeFrameSelector";
 import React from "react";
-import {TurnLevels} from "../components/DashItems/TurnLevels";
-import {archetypeItem} from "../components/DashItems/Archetypes";
+import {TurnLevels} from "../dashboard/dashItems/TurnLevels";
+import {archetypeItem} from "../dashboard/dashItems/Archetypes";
 
 
 const processMinionData = (data) => {

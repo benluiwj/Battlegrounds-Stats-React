@@ -2,12 +2,12 @@ import React, {Component} from "react";
 
 import {Link} from "react-router-dom";
 
-import Dashboard from "../components/Dashboard";
-import DashboardItem from "../components/DashboardItem";
-import Header from "../components/Header";
+import Dashboard from "./Dashboard";
+import DashboardItem from "./DashboardItem";
+import Header from "../header/Header";
 import {Layout, Alert} from "antd";
 
-import TimeFrameSelector from "../components/TimeFrameSelector";
+import TimeFrameSelector from "../header/TimeFrameSelector";
 import "antd/dist/antd.css";
 import moment from "moment";
 
@@ -15,13 +15,13 @@ import "./DashboardPage.css";
 import {getQueryResult, playerFromUrl} from "../utilities/utilities";
 
 import {withRouter} from "react-router";
-import MmrOverTime from "../components/DashItems/MmrOverTime";
-import TurnStatistics from "../components/DashItems/TurnStatistics";
-import GamesOverTime from "../components/DashItems/GamesOverTime";
+import MmrOverTime from "./dashItems/MmrOverTime";
+import TurnStatistics from "./dashItems/TurnStatistics";
+import GamesOverTime from "./dashItems/GamesOverTime";
 import hero_localize from "../utilities/localization";
-import MmrSelector from "../components/MmrSelector";
+import MmrSelector from "../header/MmrSelector";
 import routes from "../utilities/routes";
-import {archetypeItem} from "../components/DashItems/Archetypes";
+import {archetypeItem} from "./dashItems/Archetypes";
 
 
 const processHeroData = (data, player) => {

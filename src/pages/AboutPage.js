@@ -1,6 +1,6 @@
 import {Layout} from "antd";
 import {Row, Col, Divider} from 'antd';
-import Header from "../components/Header";
+import Header from "../header/Header";
 import React from "react";
 import {withRouter} from "react-router";
 

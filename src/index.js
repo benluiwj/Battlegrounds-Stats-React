@@ -7,9 +7,9 @@ import {
     BrowserRouter as Router, Switch, Route
 } from "react-router-dom";
 
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from "./dashboard/DashboardPage";
 import HeroPage from "./pages/HeroPage";
-import HistoryPage from "./pages/HistoryPage";
+import HistoryPage from "./history/HistoryPage";
 import routes from "./utilities/routes";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";

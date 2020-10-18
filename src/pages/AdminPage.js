@@ -1,19 +1,19 @@
 import React, {Component} from "react";
 
-import Header from "../components/Header";
+import Header from "../header/Header";
 import {Layout} from "antd";
 
-import TimeFrameSelector from "../components/TimeFrameSelector";
+import TimeFrameSelector from "../header/TimeFrameSelector";
 
 import "antd/dist/antd.css";
 import moment from "moment";
 
-import "./DashboardPage.css";
+import "../dashboard/DashboardPage.css";
 import {playerFromUrl} from "../utilities/utilities";
 
 import {withRouter} from "react-router";
-import GamesOverTime from "../components/DashItems/GamesOverTime";
-import {DashboardQueryProcessor, getTimeFrameFromStorage} from "./DashboardPage";
+import GamesOverTime from "../dashboard/dashItems/GamesOverTime";
+import {DashboardQueryProcessor, getTimeFrameFromStorage} from "../dashboard/DashboardPage";
 
 
 const processPlayerData = (data) => {

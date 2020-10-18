@@ -4,10 +4,10 @@ import {QuestionCircleOutlined, DeleteFilled} from '@ant-design/icons';
 const {TextArea} = Input;
 
 
-import Header from "../components/Header";
+import Header from "../header/Header";
 import React, {useState, useCallback, useRef} from "react";
 import {withRouter} from "react-router";
-import {getArchetypesFromStorage, saveArchetypes, minionsToArchetype} from "../components/DashItems/Archetypes";
+import {getArchetypesFromStorage, saveArchetypes, minionsToArchetype} from "../dashboard/dashItems/Archetypes";
 
 import {DndProvider, useDrag, useDrop, createDndContext} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';

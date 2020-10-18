@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Card, Dropdown} from "antd";
 import {MenuOutlined} from "@ant-design/icons";
-import ChartRenderer from "./ChartRenderer";
+import ChartRenderer from "../components/ChartRenderer";
 
 
 const DashboardItemDropdown = ({menu}) => {

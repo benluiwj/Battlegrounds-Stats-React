@@ -18,10 +18,10 @@ import {
     XAxis,
     YAxis
 } from "recharts";
-import {ExpandableTable, ExpandableRow} from "./ExpandableTable";
+import {ExpandableTable, ExpandableRow} from "../history/ExpandableTable";
 import moment from "moment";
 import {dateTimeFormatter} from "../utilities/utilities";
-import DashWrapper from "./DashWrapper";
+import DashWrapper from "../dashboard/DashWrapper";
 
 const dateFormatter = item => {
     return moment(item).format("MMM DD, YYYY")

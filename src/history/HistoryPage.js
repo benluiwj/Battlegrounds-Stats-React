@@ -6,7 +6,7 @@ import {dateTimeFormatter, sortRecordsByDate} from "../utilities/utilities";
 
 import "./HistoryPage.css"
 import {gql} from "apollo-boost";
-import Header from "../components/Header";
+import Header from "../header/Header";
 import {useParams} from "react-router";
 import {useQuery} from "@apollo/react-hooks";
 
