@@ -6,7 +6,11 @@ import ChartRenderer from "../components/ChartRenderer";
 import {gql} from "apollo-boost";
 import {getQueryResult} from "../utilities/utilities";
 import {useQuery} from "@apollo/react-hooks";
-import {getArchetypesFromStorage, minionsToArchetype} from "../dashboard/dashItems/Archetypes";
+import {
+    getArchetypesFromStorage,
+    minionsAndAttributesToArchetype,
+} from "../dashboard/dashItems/Archetypes";
+import {averageStats, processMinionString} from "../utilities/minions";
 
 // Class is created to properly animate expanding rows of varying heights
 class ExpandableRow extends BootstrapTable {
@@ -38,12 +42,17 @@ const collapseRow = (row) => {
 const processExpandedData = (item) => {
     const typeTest = getArchetypesFromStorage();
     return item.gameRecord.boardSet.map(d => {
-        d.archetype = minionsToArchetype(typeTest, d.minions);
-
-
+        let {minions, attributes, stats} = processMinionString(d.minions);
+        d.archetype = minionsAndAttributesToArchetype(typeTest, minions, attributes);
         d.self = d.isSelf ? "Yes" : "";
         d.key = `${d.hero}-${d.turn}-${d.isSelf}`;
-        d.avgStats = `<span className="no-wrap">${d.avgAttack} / ${d.avgHealth}</span>`;
+
+        if (stats.length > 0) {
+            const {avgAtk, avgHealth} = averageStats(stats);
+            d.avgStats = `<span className="no-wrap">${avgAtk.toFixed(1)} / ${avgHealth.toFixed(1)}</span>`;
+        } else {
+            d.avgStats = '-';
+        }
         return d;
     }).sort(sortHistory);
 };

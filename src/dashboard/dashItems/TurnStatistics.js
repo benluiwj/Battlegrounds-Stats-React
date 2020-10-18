@@ -1,4 +1,5 @@
 import {gql} from "apollo-boost";
+import {averageStats, processMinionString} from "../../utilities/minions";
 
 const processTurnData = (data) => {
     let turns = {};
@@ -11,9 +12,13 @@ const processTurnData = (data) => {
                 totalAttack: 0,
             };
 
+        const {stats} = processMinionString(item.minions);
+
+        if (stats.length === 0) return;
+        const {avgAtk, avgHealth} = averageStats(stats);
         turns[turn].count++;
-        turns[turn].totalHealth += item.avgHealth;
-        turns[turn].totalAttack += item.avgAttack;
+        turns[turn].totalHealth += avgHealth;
+        turns[turn].totalAttack += avgAtk;
     });
 
     let result = Object.entries(turns).map((data) => {
@@ -36,18 +41,10 @@ const processTurnData = (data) => {
 const TurnStatistics = (queryParams) => ({
     "id": "turnStats",
     "layout": {"x": 8, "y": 8, "w": 4, "h": 10, "minW": 3},
-    // "query": "allBoards",
-    // "queryFields": {
-    //     turn: null,
-    //     avgAttack: null,
-    //     avgHealth: null,
-    // },
-    // "queryParams": queryParams,
-    "rawQuery":  gql`{
+    "rawQuery": gql`{
                     allBoards(${queryParams}) {
                         turn
-                        avgAttack
-                        avgHealth
+                        minions
                     }
                 }`,
     "vizState": {

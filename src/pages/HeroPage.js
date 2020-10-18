@@ -8,6 +8,7 @@ import TimeFrameSelector from "../header/TimeFrameSelector";
 import React from "react";
 import {TurnLevels} from "../dashboard/dashItems/TurnLevels";
 import {archetypeItem} from "../dashboard/dashItems/Archetypes";
+import {processMinionString} from "../utilities/minions";
 
 
 const processMinionData = (data) => {
@@ -15,8 +16,9 @@ const processMinionData = (data) => {
     data.allBoards.forEach((item) => {
         if (item.gameRecord == null) return;
 
-        for (let minion of item.minionSet) {
-            let m = minion.name;
+        const {minions:minionList} = processMinionString(item.minions);
+
+        for (let m of minionList) {
 
             if (!(m in minions))
                 minions[m] = {
@@ -75,7 +77,7 @@ class HeroPage extends DashboardPage {
             "layout": {"x": 0, "y": 8, "w": 4, "h": 10, "minW": 3},
             "query": "allBoards",
             "queryFields": {
-                minionSet: ["name"],
+                minions: null,
                 gameRecord: ["position", "id"]
             },
             "queryParams": queryParams + ', isSelf:true',

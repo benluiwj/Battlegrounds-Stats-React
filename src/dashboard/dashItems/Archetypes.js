@@ -3,6 +3,7 @@ import {Button} from 'antd';
 
 import minionType from "../../utilities/minionType";
 import routes from "../../utilities/routes";
+import {processMinionString} from "../../utilities/minions";
 
 export function getArchetypesFromStorage() {
 
@@ -61,14 +62,13 @@ const archetypeTests = [
     }
 ];
 
-export function minionsToArchetype(typeTests, minions) {
-    let minionList = minions.split(/\([^)]*\),?/)
-        .filter(m => m !== "")
-        .map(m => m.trim());
+export function minionsToArchetype(typeTests, minionText) {
+    let {minions, attributes} = processMinionString(minionText);
 
-    let attributeList = minions.split(/,|(?:^|\),)(?:.*?\/\d+)?|\)/)
-        .filter(m => m !== "")
-        .map(m => m.trim());
+    return minionsAndAttributesToArchetype(typeTests, minions, attributes);
+}
+
+export function minionsAndAttributesToArchetype(typeTests, minionList, attributeList) {
 
     let combined = [...minionList, ...attributeList];
     minionList.forEach(m => {
