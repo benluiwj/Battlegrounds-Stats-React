@@ -1,4 +1,4 @@
-// Build version: 62331
+// Build version: 65000
 const hero_localize = {
     "Эдвин ван Клиф": "Edwin VanCleef",
     "Edwin VanCleef": "Edwin VanCleef",
@@ -96,12 +96,6 @@ const hero_localize = {
     "Toki l’Infinie": "Infinite Toki",
     "永恒者托奇": "Infinite Toki",
     "Toki die Unendliche": "Infinite Toki",
-    "Нефариан": "Nefarian",
-    "Nefarian": "Nefarian",
-    "Nefarian": "Nefarian",
-    "Nefarian": "Nefarian",
-    "奈法利安": "Nefarian",
-    "Nefarian": "Nefarian",
     "Смотритель": "The Curator",
     "El Curator": "The Curator",
     "El Curator": "The Curator",
@@ -297,8 +291,14 @@ const hero_localize = {
     "Нави'ла": "Chenvaala",
     "Chenvaala": "Chenvaala",
     "Chenvaala": "Chenvaala",
-    "Chenvaala": "Chenvaala",
+    "Chenvaa’la": "Chenvaala",
     "齐恩瓦拉": "Chenvaala",
     "Chenvaala": "Chenvaala",
+    "Зефрис Великий": "Zephrys, the Great",
+    "El Gran Zephrys": "Zephrys, the Great",
+    "Zephrys el Grande": "Zephrys, the Great",
+    "Zéphrys le Grand": "Zephrys, the Great",
+    "了不起的杰弗里斯": "Zephrys, the Great",
+    "Zephrys der Große": "Zephrys, the Great",
 };
 export default hero_localize;

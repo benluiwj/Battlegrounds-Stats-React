@@ -29,6 +29,8 @@ const processHeroData = (data, player) => {
     data.allGameRecords.forEach((item) => {
         let hero = item.hero;
 
+        if (hero == "NOOOOOOOOOOOO") return;
+
         if (!player && hero in hero_localize) hero = hero_localize[hero];
 
         if (!(hero in heroes))
