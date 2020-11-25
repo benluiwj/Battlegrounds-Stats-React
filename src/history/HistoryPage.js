@@ -1,7 +1,7 @@
 import React from "react";
 import {Layout} from 'antd';
 
-import ChartRenderer from "../components/ChartRenderer";
+import ChartRenderer from "../chartComponents/ChartRenderer";
 import {dateTimeFormatter, sortRecordsByDate} from "../utilities/utilities";
 
 import "./HistoryPage.css"

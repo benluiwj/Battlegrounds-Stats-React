@@ -2,7 +2,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import "./ExpandableTable.css";
 import React from "react";
 import {CaretDownOutlined, CaretRightOutlined, PlusOutlined, MinusOutlined} from "@ant-design/icons";
-import ChartRenderer from "../components/ChartRenderer";
+import ChartRenderer from "../chartComponents/ChartRenderer";
 import {gql} from "apollo-boost";
 import {getQueryResult} from "../utilities/utilities";
 import {useQuery} from "@apollo/react-hooks";

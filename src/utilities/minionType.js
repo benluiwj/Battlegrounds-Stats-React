@@ -1,4 +1,4 @@
-// Build version: 62331
+// Build version: 65000
 const minionType = {
     "Crowd Favorite": "NEUTRAL",
     "Nathrezim Overseer": "DEMON",

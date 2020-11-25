@@ -8,6 +8,10 @@ export function sortRecordsByDate(a, b) {
     return moment(a.dateTime) - moment(b.dateTime);
 }
 
+export function compareDate(a,b){
+    return moment(a) - moment(b);
+}
+
 export function playerFromUrl(player) {
     return player.replace("-", "#");
 }

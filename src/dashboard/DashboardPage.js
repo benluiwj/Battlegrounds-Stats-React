@@ -212,23 +212,16 @@ export class DashboardPage extends Component {
         // add Archetypes table
         data.dashboardItems.push(archetypeItem);
 
-
         // add turn statistics table
         if (player) {
             data.dashboardItems.push(TurnStatistics(queryParams));
         }
 
-        let alertMsg = <div>Oct 16, 2020
-            <div style={{margin: "0 auto", textAlign: "left", width: "fit-content"}}>
-                <ul style={{marginBottom: 0}}>
-                    <li>Download the new <a
-                        href="https://github.com/jawslouis/Battlegrounds-Match-Data/releases">v0.4.5 plugin</a> to track
-                        minion types available in each game
-                    </li>
-                    <li>Customize the rules for determining board archetypes <Link to={routes.archetype}>here</Link>
-                    </li>
-                </ul>
-            </div></div>;
+        let alertMsg = <div>
+            Nov 13, 2020 - Download the new <a href="https://github.com/jawslouis/Battlegrounds-Match-Data/releases">0.4.7
+            plugin</a> to fix upload issues
+            with the latest Hearthstone and HDT patch.
+        </div>;
 
         return (
             <Layout style={{height: "100%"}}>
@@ -239,7 +232,7 @@ export class DashboardPage extends Component {
                     <TimeFrameSelector timeFrame={this.state.timeFrame} setTimeFrame={this.setTimeFrame}/>
                 </Header>
                 <Layout.Content>
-                    <Alert message={alertMsg} type="info" style={{textAlign: "center"}}/>
+                    {/*<Alert message={alertMsg} type="info" style={{textAlign: "center"}}/>*/}
                     <DashboardQueryProcessor data={data} player={player} queryParams={queryParams}/>
                 </Layout.Content>
             </Layout>

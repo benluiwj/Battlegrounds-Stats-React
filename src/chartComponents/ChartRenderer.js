@@ -13,15 +13,30 @@ import {
     LineChart,
     Pie,
     PieChart,
+    ReferenceLine,
     ResponsiveContainer,
     Tooltip,
     XAxis,
-    YAxis
+    YAxis,
 } from "recharts";
-import {ExpandableTable, ExpandableRow} from "../history/ExpandableTable";
+import {ExpandableRow, ExpandableTable} from "../history/ExpandableTable";
 import moment from "moment";
-import {dateTimeFormatter} from "../utilities/utilities";
+import {compareDate, dateTimeFormatter} from "../utilities/utilities";
 import DashWrapper from "../dashboard/DashWrapper";
+import "./label.css";
+import {TooltipContent} from "./ChartDisplay";
+
+function dateIsAfter(a, b) {
+    return compareDate(a, b) > 0;
+}
+
+function dateIsOnOrAfter(a, b) {
+    return compareDate(a, b) >= 0;
+}
+
+function dateIsSame(a, b) {
+    return compareDate(a, b) == 0;
+}
 
 const dateFormatter = item => {
     return moment(item).format("MMM DD, YYYY")
@@ -36,31 +51,6 @@ const xAxisFormatter = (item) => {
 };
 
 const toPercent = (decimal, fixed = 0) => `${decimal.toFixed(fixed)}%`;
-
-const TooltipContent = ({payload, label, unit, useTotalProp, formatter}) => {
-
-    if (payload.length === 0) return null;
-
-    const total = useTotalProp ? payload[0].payload.totalCount : payload.reduce((result, entry) => (result + entry.value), 0);
-
-    return (
-        <div className="recharts-default-tooltip"
-             style={{backgroundColor: "rgb(255,255,255)", padding: "10px", border: "1px solid rgb(204, 204, 204)"}}>
-            <p className="recharts-tooltip-label" style={{margin:0, fontWeight:"bold"}}>{label}</p>
-            <p className="recharts-tooltip-label" style={{margin:0}}>{total} {unit}</p>
-            <ul className="recharts-tooltip-item-list" style={{padding: 0, margin: 0}}>
-                {
-                    payload.map((entry, index) => (
-                        <li className="recharts-tooltip-item" key={`item-${index}`}
-                            style={{color: entry.color, display: "block"}}>
-                            {`${entry.name}: ${ formatter ? formatter(entry.value) : entry.value}`}
-                        </li>
-                    ))
-                }
-            </ul>
-        </div>
-    );
-};
 
 
 const CartesianChart = ({resultSet, children, ChartComponent}) => (
@@ -88,6 +78,23 @@ const colors = [
     "#5dcdf8", "#506C64", "#77CBB9",
 ];
 
+const patches = [
+    ["Patch 19.0", "November 12, 2020", "https://playhearthstone.com/en-us/news/23557139/19-0-patch-notes"],
+    ["Patch 18.6.1", "November 5, 2020", "https://playhearthstone.com/en-us/news/23554838/18-6-1-patch-notes"],
+    ["Patch 18.6.0", "October 22, 2020", "https://playhearthstone.com/en-us/news/23534413/18-6-patch-notes"],
+];
+
+const CustomizedLabel = (props) => {
+    const {viewBox, link, patch} = props;
+    return <foreignObject className="label-wrapper" x={viewBox.x} y="0">
+        <div xmlns="http://www.w3.org/1999/xhtml" className="custom-label">
+            <a href={link}>{patch}</a>
+        </div>
+    </foreignObject>;
+
+};
+
+
 const TypeToChartComponent = {
     line: ({resultSet}) => (
         <CartesianChart resultSet={resultSet} ChartComponent={LineChart}>
@@ -108,7 +115,8 @@ const TypeToChartComponent = {
                 <CartesianGrid/>
                 <XAxis dataKey="turn"/>
                 <YAxis tickFormatter={toPercent}/>
-                <Tooltip formatter={(item) => item.toFixed(0) + "%"} content={<TooltipContent/>} unit="Games" useTotalProp/>
+                <Tooltip formatter={(item) => item.toFixed(0) + "%"} content={<TooltipContent/>} unit="Games"
+                         useTotalProp/>
                 <Legend/>
                 {resultSet.seriesNames.map((series, i) => (
                     <Bar
@@ -122,14 +130,45 @@ const TypeToChartComponent = {
             </BarChart>
         </ResponsiveContainer>
     ),
-    area: ({resultSet}) => (
-        <ResponsiveContainer width="100%" height={350}>
-            <AreaChart data={resultSet.data}>
+    area: ({resultSet}) => {
+
+        let patchesToDisplay = [];
+
+        // add in date lines if necc
+        patches.forEach(patch => {
+            let patchDate = patch[1];
+            let resultDateStart = resultSet.data[0].date;
+            if (dateIsAfter(patchDate, resultDateStart)) {
+                // patch date is after results period.
+                patchesToDisplay.push(patch);
+                let matchingDataIdx = resultSet.data.findIndex(d => dateIsOnOrAfter(d.date, patchDate));
+                let matchingData = resultSet.data[matchingDataIdx];
+                if (dateIsSame(matchingData.date, patchDate)) {
+                    return; // no need to add for this patch
+                }
+                resultSet.data.splice(matchingDataIdx, 0, {date: patchDate, 0:0});
+            }
+        });
+
+        let patchesByDate = {};
+        patchesToDisplay.forEach(patch => {
+            patchesByDate[patch[1]] = [patch[0], patch[2]];
+        });
+
+        return <ResponsiveContainer width="100%" height={350}>
+            <AreaChart data={resultSet.data} margin={{top: 20}}>
                 <CartesianGrid/>
                 <XAxis dataKey="date"/>
                 <YAxis/>
-                <Tooltip content={<TooltipContent unit={resultSet.unit}/>}/>
+                <Tooltip content={<TooltipContent unit={resultSet.unit} patches={patchesByDate}/>}/>
                 <Legend/>
+                {patchesToDisplay.map(patch => <ReferenceLine key={patch[0]} x={patch[1]} stroke="black"
+                                                              label={<CustomizedLabel link={patch[2]}
+                                                                                      patch={patch[0]}/>}
+                                                              strokeDasharray="3 3"/>
+                )}
+
+
                 {resultSet.seriesNames.map((series, i) => (
                     <Area
                         key={series.key}
@@ -141,8 +180,8 @@ const TypeToChartComponent = {
                     />
                 ))}
             </AreaChart>
-        </ResponsiveContainer>
-    ),
+        </ResponsiveContainer>;
+    },
     pie: ({resultSet}) => (
         <ResponsiveContainer width="100%" height={350}>
             <PieChart>
