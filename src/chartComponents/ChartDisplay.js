@@ -8,7 +8,7 @@ export const TooltipContent = ({payload, label, unit, useTotalProp, formatter, p
     const total = useTotalProp ? payload[0].payload.totalCount : payload.reduce((result, entry) => (result + entry.value), 0);
 
     let patchLabel = null;
-    if (label in patches) {
+    if (patches && label in patches) {
         let patch = patches[label];
         patchLabel = <a href={patch[1]}>{patch[0]}</a>;
     }
