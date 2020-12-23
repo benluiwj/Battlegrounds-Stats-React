@@ -79,6 +79,7 @@ const colors = [
 ];
 
 const patches = [
+    ["Patch 19.2", "December 15, 2020", "https://playhearthstone.com/en-us/news/23584141/19-2-patch-notes"],
     ["Patch 19.0", "November 12, 2020", "https://playhearthstone.com/en-us/news/23557139/19-0-patch-notes"],
     ["Patch 18.6.1", "November 5, 2020", "https://playhearthstone.com/en-us/news/23554838/18-6-1-patch-notes"],
     ["Patch 18.6.0", "October 22, 2020", "https://playhearthstone.com/en-us/news/23534413/18-6-patch-notes"],
@@ -95,20 +96,75 @@ const CustomizedLabel = (props) => {
 };
 
 
+function createPatches(resultSet, dateField = 'date') {
+    let patchesToDisplay = [];
+
+    // add in date lines if necc
+
+    patches.forEach(patch => {
+        let patchDate = patch[1];
+        let resultDateStart = resultSet.data[0][dateField];
+        if (dateIsAfter(patchDate, resultDateStart)) {
+            // patch date is after results period.
+            patchesToDisplay.push(patch);
+            let matchingDataIdx = resultSet.data.findIndex(d => dateIsOnOrAfter(d[dateField], patchDate));
+
+            if (matchingDataIdx < 0) {
+
+                matchingDataIdx = resultSet.data.length;
+            } else {
+                let matchingData = resultSet.data[matchingDataIdx];
+                if (dateIsSame(matchingData[dateField], patchDate)) {
+                    return; // no need to add for this patch
+                }
+            }
+            resultSet.data.splice(matchingDataIdx, 0, {[dateField]: patchDate, 0: 0});
+        }
+    });
+
+    let patchesByDate = {};
+    patchesToDisplay.forEach(patch => {
+        patchesByDate[patch[1]] = [patch[0], patch[2]];
+    });
+    return [patchesByDate, patchesToDisplay];
+}
+
 const TypeToChartComponent = {
-    line: ({resultSet}) => (
-        <CartesianChart resultSet={resultSet} ChartComponent={LineChart}>
-            {resultSet.seriesNames.map((series, i) => (
-                <Line
-                    yAxisId={series.axis}
-                    key={series.key}
-                    dataKey={series.key}
-                    name={series.title}
-                    stroke={colors[i]}
-                />
-            ))}
-        </CartesianChart>
-    ),
+    line: ({resultSet}) => {
+
+        let [patchesByDate, patchesToDisplay] = createPatches(resultSet, 'x');
+
+        return <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={resultSet.data} margin={{top: 20}}>
+                <XAxis dataKey="x" tickFormatter={xAxisFormatter} minTickGap={20}/>
+                <YAxis yAxisId="mmr" type="number" domain={[resultSet.minData, 'auto']} allowDataOverflow={true}
+                       label={{value: resultSet.leftAxisLabel, angle: -90, position: 'insideLeft'}}/>
+                {resultSet.seriesNames.length > 1 &&
+                <YAxis yAxisId="position" type="number" domain={['auto', resultSet.lowestPos]} orientation="right"
+                       reversed={true}
+                       allowDataOverflow={true} label={{value: 'Position', angle: 90, position: 'insideRight'}}/>
+                }
+                <CartesianGrid/>
+                {patchesToDisplay.map(patch => <ReferenceLine key={patch[0]} x={patch[1]} stroke="black"
+                                                              label={<CustomizedLabel link={patch[2]}
+                                                                                      patch={patch[0]}/>}
+                                                              strokeDasharray="3 3" yAxisId="mmr"/>
+                )}
+                {resultSet.seriesNames.map((series, i) => (
+                    <Line
+                        yAxisId={series.axis}
+                        key={series.key}
+                        dataKey={series.key}
+                        name={series.title}
+                        stroke={colors[i]}
+                    />
+                ))}
+                <Legend/>
+                <Tooltip labelFormatter={dateTimeFormatter(resultSet.xAxisFormat)}/>
+
+            </LineChart>
+        </ResponsiveContainer>;
+    },
     bar: ({resultSet}) => (
         <ResponsiveContainer width="100%" height={350}>
             <BarChart data={resultSet.data}>
@@ -132,28 +188,7 @@ const TypeToChartComponent = {
     ),
     area: ({resultSet}) => {
 
-        let patchesToDisplay = [];
-
-        // add in date lines if necc
-        patches.forEach(patch => {
-            let patchDate = patch[1];
-            let resultDateStart = resultSet.data[0].date;
-            if (dateIsAfter(patchDate, resultDateStart)) {
-                // patch date is after results period.
-                patchesToDisplay.push(patch);
-                let matchingDataIdx = resultSet.data.findIndex(d => dateIsOnOrAfter(d.date, patchDate));
-                let matchingData = resultSet.data[matchingDataIdx];
-                if (dateIsSame(matchingData.date, patchDate)) {
-                    return; // no need to add for this patch
-                }
-                resultSet.data.splice(matchingDataIdx, 0, {date: patchDate, 0:0});
-            }
-        });
-
-        let patchesByDate = {};
-        patchesToDisplay.forEach(patch => {
-            patchesByDate[patch[1]] = [patch[0], patch[2]];
-        });
+        let [patchesByDate, patchesToDisplay] = createPatches(resultSet);
 
         return <ResponsiveContainer width="100%" height={350}>
             <AreaChart data={resultSet.data} margin={{top: 20}}>
