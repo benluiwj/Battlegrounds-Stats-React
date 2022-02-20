@@ -19,10 +19,10 @@ const AboutPage = () =>
                     <Col className="gutter-row" span={12}>
                         <h4>Plugin</h4>
                         <p> Follow the instructions <a
-                            href="https://github.com/jawslouis/Battlegrounds-Match-Data">here</a> to download
+                            href="https://github.com/benluiwj/Battlegrounds-Match-Data">here</a> to download
                             and install the plugin.</p>
                         <p>Please file issues at the <a
-                            href="https://github.com/jawslouis/Battlegrounds-Match-Data/issues">plugin issue tracker</a>.</p>
+                            href="https://github.com/benluiwj/Battlegrounds-Match-Data/issues">plugin issue tracker</a>.</p>
                     </Col>
                     <Col className="gutter-row" span={12}>
                         <h4>Dashboard</h4>
